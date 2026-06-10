@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ukubona LLC — Enterprise Digital Twin Roundtable</title>
+<style>
+  :root {
+    --ink: #1a1a18;
+    --ink-2: #3d3d3a;
+    --ink-3: #6b6b66;
+    --ink-4: #9c9a92;
+    --surface: #fafaf8;
+    --surface-2: #f2f0ea;
+    --surface-3: #e8e5dc;
+    --accent-xai: #2563eb;
+    --accent-google: #16a34a;
+    --accent-openai: #7c3aed;
+    --accent-ukubona: #b45309;
+    --border: rgba(26,26,24,0.12);
+    --mono: 'Courier New', Courier, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  /* ── masthead ─────────────────────────────────────── */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 2.5rem 3rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .masthead-eyebrow {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .masthead-title {
+    font-size: 2.4rem;
+    font-weight: normal;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-width: 680px;
+  }
+  .masthead-meta {
+    margin-top: 0.75rem;
+    font-size: 13px;
+    color: var(--ink-3);
+    font-family: 'Courier New', monospace;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .masthead-meta span::before {
+    content: '↳ ';
+  }
+
+  /* ── layout ──────────────────────────────────────── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  .toc {
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 3rem;
+    display: flex;
+    gap: 0.5rem 2rem;
+    flex-wrap: wrap;
+    font-size: 13px;
+    font-family: 'Courier New', monospace;
+  }
+  .toc a {
+    color: var(--ink-3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--ink); }
+  .toc a::before { content: '§ '; }
+
+  /* ── speaker blocks ──────────────────────────────── */
+  .speaker-block {
+    border-left: 3px solid var(--border);
+    margin: 3rem 0;
+    padding: 0;
+    position: relative;
+  }
+  .speaker-block::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent-color);
+    opacity: 1;
+  }
+  .speaker-block[data-speaker="xai"]      { --accent-color: var(--accent-xai); }
+  .speaker-block[data-speaker="google"]   { --accent-color: var(--accent-google); }
+  .speaker-block[data-speaker="openai"]   { --accent-color: var(--accent-openai); }
+  .speaker-block[data-speaker="ukubona"] { --accent-color: var(--accent-ukubona); }
+
+  .speaker-header {
+    padding: 0.75rem 1.5rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  .speaker-name {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--accent-color);
+  }
+  .speaker-subtitle {
+    font-size: 12px;
+    color: var(--ink-4);
+    font-family: 'Courier New', monospace;
+  }
+
+  .speaker-body {
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+  }
+
+  /* ── typography ──────────────────────────────────── */
+  .speaker-body h2 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 2rem 0 0.75rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .speaker-body h3 {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 1.5rem 0 0.5rem;
+    color: var(--ink-2);
+  }
+  .speaker-body h4 {
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin: 1.25rem 0 0.4rem;
+    color: var(--ink-3);
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .speaker-body p {
+    margin-bottom: 1rem;
+    max-width: 72ch;
+  }
+  .speaker-body ul, .speaker-body ol {
+    margin: 0.5rem 0 1rem 1.5rem;
+    max-width: 70ch;
+  }
+  .speaker-body li { margin-bottom: 0.35rem; }
+  .speaker-body li ul, .speaker-body li ol {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  /* ── math ────────────────────────────────────────── */
+  .math-block {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    color: var(--ink-2);
+    max-width: 65ch;
+  }
+  .math-inline {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--ink-2);
+  }
+
+  /* ── code ─────────────────────────────────────────── */
+  pre {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    background: #1a1a18;
+    color: #d4d0c4;
+    padding: 1rem 1.25rem;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1rem 0;
+    line-height: 1.55;
+    max-width: 100%;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--ink-2);
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ── tables ──────────────────────────────────────── */
+  .table-wrap { overflow-x: auto; margin: 1rem 0; max-width: 100%; }
+  table {
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 500px;
+  }
+  thead th {
+    background: var(--surface-3);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  tbody td {
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.75rem;
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  tbody tr:nth-child(even) td { background: var(--surface-2); }
+
+  /* ── blockquote ──────────────────────────────────── */
+  blockquote {
+    border-left: 3px solid var(--ink-3);
+    padding: 0.5rem 1rem;
+    margin: 1rem 0;
+    color: var(--ink-2);
+    font-style: italic;
+    max-width: 65ch;
+  }
+
+  /* ── entity badges ───────────────────────────────── */
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.8em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0 5px;
+    color: var(--ink-3);
+  }
+
+  /* ── dividers ─────────────────────────────────────── */
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* ── ukubona contribution accent ─────────────────── */
+  .speaker-block[data-speaker="ukubona"] .speaker-header {
+    background: #fef3c7;
+    border-bottom-color: #fcd34d;
+  }
+  .speaker-block[data-speaker="ukubona"] {
+    border-left-color: var(--accent-ukubona);
+  }
+
+  /* ── footer ──────────────────────────────────────── */
+  footer {
+    border-top: 2px solid var(--ink);
+    padding: 1.5rem 3rem;
+    margin-top: 4rem;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    color: var(--ink-4);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .masthead, .toc, footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+    .container { padding: 0 1.25rem; }
+    .masthead-title { font-size: 1.6rem; }
+    .speaker-body { padding: 1rem; }
+    .speaker-header { padding: 0.5rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-eyebrow">Ukubona LLC — Internal Working Document</div>
+  <h1 class="masthead-title">Enterprise Digital Twin: A Multi-Model Roundtable on the Pentadic State Vector</h1>
+  <div class="masthead-meta">
+    <span>Roundtable: xAI · Google · OpenAI · Ukubona LLC</span>
+    <span>Date: 2026-06-10</span>
+    <span>Framework: θᵗ → L₀+Σwᵢ·Lᵢ → f(σ²,λ,ε) → γ|ε_FGT|² → L(θᵗ⁺¹)</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#xai">xAI — Schema &amp; Architecture</a>
+  <a href="#google">Google — Full Human Registry</a>
+  <a href="#openai">OpenAI — Ontological Inversion</a>
+  <a href="#ukubona">Ukubona LLC — Contribution</a>
+</nav>
+
+<main class="container">
+
+  <!-- ══════════════════════════════════════════════════
+       xAI
+  ═══════════════════════════════════════════════════ -->
+  <article class="speaker-block" data-speaker="xai" id="xai">
+    <div class="speaker-header">
+      <span class="speaker-name">xAI</span>
+      <span class="speaker-subtitle">Fortune 500 goal simulation — schema, sensing modes, SlowAPI</span>
+    </div>
+    <div class="speaker-body">
+
+      <h2>Framing</h2>
+      <ul>
+        <li>Links: <a href="https://ukubona-llc.github.io/time/">ukubona-llc.github.io/time/</a> · <a href="https://ukb-dt.github.io/tumbleweed/">ukb-dt.github.io/tumbleweed/</a> · <a href="https://ukb-dt.github.io/mureebe-muzaale/">ukb-dt.github.io/mureebe-muzaale/</a> · <a href="https://ukubona-llc.github.io/state-vector-manifold/">state-vector-manifold</a> · <a href="https://ukubona-llc.github.io/digital-twin-flex/">digital-twin-flex</a></li>
+        <li>We have a Fortune 500 company as ideal and wish to simulate our goals</li>
+      </ul>
+
+      <h3>Leadership</h3>
+      <ul>
+        <li><strong>HR:</strong> CHRO — Talent Scouts</li>
+        <li><strong>Ops:</strong> COO — Vendors</li>
+        <li><strong>Finance:</strong> CFO — Bankers</li>
+        <li><strong>Executive:</strong> CEO</li>
+        <li><strong>Compliance:</strong> CCO — Regulators (Government), Auditors</li>
+      </ul>
+
+      <h3>Bigger Picture</h3>
+      <ul>
+        <li><strong>Nonself:</strong> HR hires from outside (we aren't a fuckin pipeline from the obstetric ward)</li>
+        <li><strong>Input:</strong> Our human &amp; non-human resources</li>
+        <li><strong>Throughput:</strong> Undergo transformation into product</li>
+        <li><strong>Output:</strong> Service to federated ground truth (ie shareholders / principles &amp; board members)</li>
+        <li><strong>Self:</strong> Ubuntu ngumuntu nga bantu (the enterprise is part of other systems in the jurisdiction)</li>
+      </ul>
+
+      <h3>Representation</h3>
+      <h4>I. Kapital, Infrastructure — Journaling / Sensors / RLS &amp; JWT <span class="math-inline">θᵗ</span></h4>
+      <ul>
+        <li>Humans: 100</li>
+        <li>Machines (eg cars, trucks): 35</li>
+        <li>Commodities: N per quarter</li>
+        <li>Services (deliverables): ~5</li>
+        <li>Vendors: 13</li>
+      </ul>
+
+      <h4>II. Labor, Compute — FastAPI / Jacobian <span class="math-inline">L₀+Σwᵢ·Lᵢ</span></h4>
+      <p>How these (lagged) correlate in multivariable regression with: Asset Backed Securities · Bonds · Currencies / FX · Derivatives · Equity</p>
+
+      <h4>III. Products, Tokens</h4>
+
+      <h4>IV. Services, Inference</h4>
+      <ul>
+        <li>Tensor</li>
+        <li>Compressor Matrix</li>
+        <li>Vector</li>
+        <li>Eigenmode</li>
+        <li>Scalar</li>
+      </ul>
+
+      <h4>V. Information, Supply &amp; Demand</h4>
+      <ul>
+        <li>Variance</li>
+        <li>Coupling</li>
+        <li>Shock</li>
+        <li>Error</li>
+        <li>Update</li>
+      </ul>
+
+      <h4>NDJSON <span class="math-inline">f(σ²,λ,ε)</span></h4>
+      <p>RLS &amp; JWT append-only event-sourced time-stamped journaling &amp; "sensing". This is ontological with "warts and all" very welcome.</p>
+
+      <h4>SlowAPI <span class="math-inline">γ|ε_FGT|²</span></h4>
+      <p>Next-token prediction on what will be journaled and sensed tomorrow. Y_pred − Y_observed = error_FGT (federated ground truth from various sensors and journaling). Update weights / priors.</p>
+
+      <h4>Update <span class="math-inline">L(θᵗ⁺¹)</span></h4>
+      <p>Since we aren't running a data center its mostly posteriori → prior update.</p>
+
+      <hr class="section-divider">
+
+      <h2>Ontological Event Schema (NDJSON)</h2>
+      <p>Every entity interaction, state change, or observation is journaled as a discrete event. The frequency of these <code>journal</code> and <code>sense</code> events actively becomes a feature vector for the Jacobian matrix.</p>
+
+      <pre><code>{"event_id": "evt_001", "timestamp": "2023-01-15T09:00:00Z", "entity_id": "E_001", "event_type": "relation_started", "payload": {"role": "CEO", "department": "Executive", "clearance_base": 10}}
+{"event_id": "evt_002", "timestamp": "2024-03-10T11:30:00Z", "entity_id": "E_042", "event_type": "relation_started", "payload": {"role": "Talent Scout", "department": "HR", "clearance_base": 4}}
+{"event_id": "evt_003", "timestamp": "2025-11-20T14:15:00Z", "entity_id": "E_042", "event_type": "relation_ended", "payload": {"reason": "external_transition"}}
+{"event_id": "evt_004", "timestamp": "2026-06-10T08:00:00Z", "entity_id": "E_088", "event_type": "token_issued", "payload": {"granted_clearance": 8, "duration_hours": 12, "resource": "Jacobian_Compute_Cluster"}}
+{"event_id": "evt_005", "timestamp": "2026-06-10T17:14:23Z", "entity_id": "E_001", "event_type": "journal", "payload": {"vector_intention": "optimize_throughput", "ub_error_margin": 0.04}}</code></pre>
+
+      <h2>Entity Ledger &amp; Nested Hierarchy</h2>
+
+      <h3>1. Executive (Vector Intention)</h3>
+      <ul>
+        <li><strong>CEO:</strong> Kato Mukasa <span class="badge">E_001</span> · Active · Start: 2023-01-15 · End: null · Clearance: 10</li>
+      </ul>
+
+      <h3>2. Human Resources</h3>
+      <ul>
+        <li><strong>CHRO:</strong> Sarah Achieng <span class="badge">E_002</span> · Active · Start: 2023-02-01 · Clearance: 9</li>
+        <li><strong>Talent Scout (Past):</strong> David Ouma <span class="badge">E_042</span> · Start: 2024-03-10 · End: 2025-11-20 · Clearance: 4 (Revoked)</li>
+        <li><strong>Talent Scout (Active):</strong> Grace Namaganda <span class="badge">E_088</span> · Start: 2025-12-01 · Clearance: 4 (Temporary Token: Level 8 active for Jacobian analysis)</li>
+      </ul>
+
+      <h3>3. Operations (Supply Chain &amp; Throughput)</h3>
+      <ul>
+        <li><strong>COO:</strong> James Musisi <span class="badge">E_003</span> · Active · Start: 2023-01-20 · Clearance: 9</li>
+        <li><strong>Logistics Coordinator:</strong> Amina Kintu <span class="badge">E_055</span> · Start: 2023-06-15 · Clearance: 6</li>
+      </ul>
+
+      <h3>4. Finance</h3>
+      <ul>
+        <li><strong>CFO:</strong> Elena Rostova <span class="badge">E_004</span> · Active · Start: 2023-03-01 · Clearance: 9</li>
+        <li><strong>Quantitative Analyst:</strong> Michael Chen <span class="badge">E_061</span> · Start: 2024-01-10 · Clearance: 7</li>
+      </ul>
+
+      <h3>5. Compliance</h3>
+      <ul>
+        <li><strong>CCO:</strong> Robert Lwanga <span class="badge">E_005</span> · Active · Start: 2023-04-01 · Clearance: 9</li>
+        <li><strong>External Auditor:</strong> Deloitte_Node_Alpha <span class="badge">V_102</span> · Start: 2026-01-05 · End: 2026-03-15 · Clearance: 8 (Tokenized, Expired)</li>
+      </ul>
+
+      <h2>Analytic Mechanics</h2>
+      <h3>Frequency as a Metric</h3>
+      <p>The raw count and cadence of <code>journal</code> and <code>sense</code> events per entity form a time-series vector. A highly frequent sensing rate from the Logistics Coordinator (<span class="badge">E_055</span>) compared to a low journaling rate from the CFO (<span class="badge">E_004</span>) exposes operational bottlenecks or information asymmetry.</p>
+
+      <h3>Clearance &amp; Temporal Tokens</h3>
+      <p>Static clearances dictate base UI/UX access. When an entity requires elevated access, a <code>token_issued</code> event is appended to the ledger. The validation logic:</p>
+      <div class="math-block">Access_t = max(Clearance_base, ActiveToken(t))</div>
+
+      <h3>The Jacobian Application</h3>
+      <p>Because every relationship start/end and behavioral update is timestamped, we can construct the precise hierarchical state for any <span class="math-inline">t</span>. The Jacobian evaluates the sensitivity of the output (Service to Federated Ground Truth) against changes in the input weights at that specific <span class="math-inline">t</span>, explicitly accounting for measured User Behavior error margins.</p>
+
+      <hr class="section-divider">
+      <h2>Full Asset Registry (<span class="math-inline">θᵗ</span>)</h2>
+
+      <h3>Machines (35 Total)</h3>
+      <ul>
+        <li><strong>Heavy Duty Freight Trucks (10 Units):</strong> <span class="badge">M_001</span>–<span class="badge">M_010</span> · Sensing: GPS, fuel consumption, tire pressure, velocity · Frequency: ≈0.5 Hz</li>
+        <li><strong>Last-Mile Delivery Vans (20 Units):</strong> <span class="badge">M_011</span>–<span class="badge">M_030</span> · Sensing: Door proximity sensors, ignition states, route deviations · Frequency: Event-driven</li>
+        <li><strong>Edge Compute Nodes / Server Racks (5 Units):</strong> <span class="badge">M_031</span>–<span class="badge">M_035</span> · Sensing: FastAPI request latency, CPU/GPU temperature, memory utilization, JWT auth handshakes · Frequency: Continuous</li>
+      </ul>
+
+      <h3>Commodities (N Per Quarter)</h3>
+      <ul>
+        <li><strong>N₁ (Energy):</strong> Electricity in Megawatt-hours (MWh)</li>
+        <li><strong>N₂ (Fuel):</strong> Diesel/petrol in liters</li>
+        <li><strong>N₃ (Raw Materials):</strong> Physical inputs measured in metric tons</li>
+      </ul>
+
+      <h3>Services (5 Itemized Deliverables)</h3>
+      <ul>
+        <li><strong>S_01:</strong> Predictive Asset Maintenance API</li>
+        <li><strong>S_02:</strong> Sovereign Cross-Border Routing</li>
+        <li><strong>S_03:</strong> Automated Ledger Compliance</li>
+        <li><strong>S_04:</strong> Liquidity Yield Optimization</li>
+        <li><strong>S_05:</strong> Just-In-Time Supply Chain Balancing</li>
+      </ul>
+
+      <h3>Vendors (13 Total)</h3>
+      <ul>
+        <li><strong>V_01–V_03 (Financial):</strong> 3 Tier-1 Investment Banks</li>
+        <li><strong>V_04–V_08 (Infrastructure):</strong> 5 Energy, Cloud, and Fuel providers</li>
+        <li><strong>V_09–V_11 (Nonself Pools):</strong> 3 Third-party recruitment platforms</li>
+        <li><strong>V_12–V_13 (Regulatory/Audit):</strong> 2 External auditing firms</li>
+      </ul>
+
+      <h3>Sample 24-Hour NDJSON Snapshot</h3>
+      <pre><code>{"t": "2026-06-10T17:15:00.001Z", "id": "M_004", "type": "telemetry", "data": {"lat": 0.3476, "lng": 32.5825, "fuel_liters": 142.5}, "clearance": 1}
+{"t": "2026-06-10T17:15:00.042Z", "id": "E_068", "type": "journal", "data": {"regression_target": "FX_USD_UGX", "variance_observed": 0.012}, "clearance": 7}
+{"t": "2026-06-10T17:15:01.105Z", "id": "V_02", "type": "external_shock", "data": {"bond_yield_basis_points": +15}, "clearance": 5}
+{"t": "2026-06-10T17:15:02.000Z", "id": "E_012", "type": "token_issuance", "data": {"target_entity": "E_033", "elevated_clearance": 6, "duration_hours": 4}, "clearance": 5}</code></pre>
+
+      <h2>Modes of Sensing &amp; Operational Prices</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Mode of Sensing</th><th>Target Entities</th><th>Data Payload Type</th><th>Frequency (ω)</th><th>Price / Unit Cost</th></tr></thead>
+          <tbody>
+            <tr><td>Telemetry Ingest</td><td>M_001–M_030</td><td>NDJSON (GPS, speed, diagnostics)</td><td>0.5 Hz (Continuous)</td><td>~$0.02 per million events (Storage-heavy)</td></tr>
+            <tr><td>Auth &amp; Network Handshakes</td><td>M_031–M_035, JWT Tokens</td><td>Logs (IP, Endpoint, Response time, JWT sig)</td><td>Per API call</td><td>Latency Tax: ~1.2ms overhead per request</td></tr>
+            <tr><td>Spatial Check-ins</td><td>E_051–E_090</td><td>RFID/NFC Badge scans at gates</td><td>Event-driven</td><td>Infrastructure CapEx; negligible compute</td></tr>
+            <tr><td>Market Data Scrape</td><td>V_01–V_03</td><td>Live WebSockets (FX tickers, Bond yields, ABS)</td><td>Tick-by-tick</td><td>$1,500/mo API subscription + parse time</td></tr>
+            <tr><td>Self-Report Sign-off</td><td>E_011–E_050</td><td>UI/UX task completion checkmarks</td><td>10–50 events/day</td><td>Cognitive Friction: 2–3 sec focus per interaction</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>What Else: Missing Links for Simulation</h2>
+      <h3>1. Jacobian Correlation Mapping</h3>
+      <div class="math-block">L_0 + Σ wᵢ·Lᵢ</div>
+      <p>If the journaling frequency of Heavy Machinery Mechanic (<span class="badge">E_084</span>) drops by 40% — a leading indicator of maintenance neglect — how quickly does that propagate into a volatility spike in Asset-Backed Securities or Equity valuation?</p>
+
+      <h3>2. Ubuntu Jurisdiction / Shock Injector</h3>
+      <ul>
+        <li><strong>Regulatory Shocks:</strong> Government updates compliance laws → CCO (<span class="badge">E_005</span>) issues temporary Level 9 tokens to external auditors (<span class="badge">V_12</span>)</li>
+        <li><strong>Macro Shocks:</strong> FX fluctuations from banker vendors (<span class="badge">V_01</span>) update commodity costs</li>
+      </ul>
+
+      <h3>3. SlowAPI Prediction &amp; SGD Loop</h3>
+      <div class="math-block">Loss = γ|ε_FGT|²
+
+Y_predicted − Y_observed = Error
+
+Posteriori → Prior via SGD</div>
+      <p>At midnight of every simulated day, the system evaluates prediction error. If error was driven by high noise in driver telemetry, the SGD dampens that sensor's weight for the next day's forecast.</p>
+
+    </div>
+  </article>
+
+  <!-- ══════════════════════════════════════════════════
+       GOOGLE
+  ═══════════════════════════════════════════════════ -->
+  <article class="speaker-block" data-speaker="google" id="google">
+    <div class="speaker-header">
+      <span class="speaker-name">Google</span>
+      <span class="speaker-subtitle">Full 100-human operational ledger — named individuals, all tiers</span>
+    </div>
+    <div class="speaker-body">
+
+      <h2>The 100-Human Operational Ledger (θᵗ)</h2>
+
+      <h3>Tier 1: Executive Leadership (5 Entities)</h3>
+      <p><em>The system's vector intentions and ultimate state anchors.</em></p>
+      <ul>
+        <li><span class="badge">E_001</span> Kato Mukasa · CEO · Active · Start: 2023-01-15 · End: null · Clearance: 10 · ω: 2/day</li>
+        <li><span class="badge">E_002</span> Sarah Achieng · CHRO · Active · Start: 2023-02-01 · End: null · Clearance: 9 · ω: 4/day</li>
+        <li><span class="badge">E_003</span> James Musisi · COO · Active · Start: 2023-01-20 · End: null · Clearance: 9 · ω: 5/day</li>
+        <li><span class="badge">E_004</span> Elena Rostova · CFO · Active · Start: 2023-03-01 · End: null · Clearance: 9 · ω: 3/day</li>
+        <li><span class="badge">E_005</span> Robert Lwanga · CCO · Active · Start: 2023-04-01 · End: null · Clearance: 9 · ω: 6/day</li>
+      </ul>
+
+      <h3>Tier 2: Vice Presidents (5 Entities)</h3>
+      <p><em>Translating executive state vectors into departmental matrix weightings.</em></p>
+      <ul>
+        <li><span class="badge">E_006</span> Marcus Vance · VP of Talent &amp; Culture · Active · Start: 2023-06-01 · Clearance: 8 · ω: 8/day</li>
+        <li><span class="badge">E_007</span> Diana Katusiime · VP of Supply Chain Ops · Active · Start: 2023-05-15 · Clearance: 8 · ω: 10/day</li>
+        <li><span class="badge">E_008</span> Tariq Al-Mansoor · VP of Treasury &amp; Risk · Active · Start: 2023-07-22 · Clearance: 8 · ω: 7/day</li>
+        <li><span class="badge">E_009</span> Joan Okello · VP of Regulatory Affairs · Active · Start: 2023-08-11 · Clearance: 8 · ω: 9/day</li>
+        <li><span class="badge">E_010</span> Simon Peter Ojok · VP of Infrastructure · Active · Start: 2023-09-01 · Clearance: 8 · ω: 12/day</li>
+      </ul>
+
+      <h3>Tier 3: Managers &amp; Assistants (15 Entities)</h3>
+      <p><em>The coordination layer mapping resource inputs to product throughput.</em></p>
+
+      <h4>HR / Talent Acquisition Managers</h4>
+      <ul>
+        <li><span class="badge">E_011</span> Brenda Nsubuga · Active · Start: 2024-01-10 · Clearance: 6 · ω: 15/day</li>
+        <li><span class="badge">E_012</span> David Cox · Active · Start: 2024-02-14 · Clearance: 6 · ω: 14/day</li>
+        <li><span class="badge">E_013</span> Arthur Ssewankambo · Assistant Mgr · Active · Start: 2024-11-01 · Clearance: 5 · ω: 22/day</li>
+      </ul>
+
+      <h4>Operations &amp; Fleet Managers</h4>
+      <ul>
+        <li><span class="badge">E_014</span> Rajesh Patel · Dispatch Manager · Active · Start: 2023-10-05 · Clearance: 6 · ω: 45/day</li>
+        <li><span class="badge">E_015</span> Fiona Wall · Logistics Lead · Active · Start: 2024-03-18 · Clearance: 6 · ω: 38/day</li>
+        <li><span class="badge">E_016</span> Moses Bwambale · Terminal Supervisor · Active · Start: 2023-11-20 · Clearance: 6 · ω: 50/day</li>
+        <li><span class="badge">E_017</span> Grace Atim · Assistant Dispatcher · Active · Start: 2025-02-02 · Clearance: 5 · ω: 65/day</li>
+        <li><span class="badge">E_018</span> Chloe Dupont · Fleet Health Manager · Active · Start: 2024-08-12 · Clearance: 6 · ω: 40/day</li>
+      </ul>
+
+      <h4>Finance &amp; Accounting Managers</h4>
+      <ul>
+        <li><span class="badge">E_019</span> Samuel Gyimah · Billing Manager · Active · Start: 2023-12-01 · Clearance: 6 · ω: 20/day</li>
+        <li><span class="badge">E_020</span> Lin Wei · Treasury Manager · Active · Start: 2024-04-25 · Clearance: 7 · ω: 18/day</li>
+        <li><span class="badge">E_021</span> Patricia Nabakooza · Accounts Assistant · Active · Start: 2025-05-10 · Clearance: 5 · ω: 30/day</li>
+      </ul>
+
+      <h4>Compliance &amp; Audit Managers</h4>
+      <ul>
+        <li><span class="badge">E_022</span> Timothy Mubiru · Internal Audit Lead · Active · Start: 2024-01-15 · Clearance: 7 · ω: 25/day</li>
+        <li><span class="badge">E_023</span> Sandra Martinez · QA Manager · Active · Start: 2024-06-01 · Clearance: 6 · ω: 28/day</li>
+        <li><span class="badge">E_024</span> Ivan Ssemwanga · Safety Inspector · Active · Start: 2024-02-20 · Clearance: 6 · ω: 55/day</li>
+        <li><span class="badge">E_025</span> Alice Alaso · Compliance Assistant · Active · Start: 2025-07-01 · Clearance: 5 · ω: 34/day</li>
+      </ul>
+
+      <h3>Tier 4: Analysts &amp; Specialists (25 Entities)</h3>
+      <p><em>The compute and sourcing engine driving multivariable regression vectors.</em></p>
+
+      <h4>HR / Nonself Pool Sourcers &amp; Recruiters (E_026–E_033)</h4>
+      <ul>
+        <li><span class="badge">E_026</span> David Ouma · Talent Scout · <strong>Terminated</strong> · Start: 2024-03-10 · End: 2025-11-20 · Clearance: 0 (Was 4) · ω: 0/day</li>
+        <li><span class="badge">E_027</span> Grace Namaganda · Talent Scout · Active · Start: 2025-12-01 · Clearance: 4 · ω: 28/day</li>
+        <li><span class="badge">E_028</span>–<span class="badge">E_033</span> Named Specialists (Linda Blake, John Ssebaana, etc.) · Active · Varied Starts (2024–2025) · Clearance: 4 · ω: ≈25/day</li>
+      </ul>
+
+      <h4>Finance Quant &amp; FX Analysts (E_034–E_042)</h4>
+      <ul>
+        <li><span class="badge">E_034</span> Michael Chen · Lead Quantitative Analyst · Active · Start: 2024-01-10 · Clearance: 7 · ω: 40/day</li>
+        <li><span class="badge">E_035</span> Aisha Nassolo · Derivatives Analyst · Active · Start: 2024-09-15 · Clearance: 7 · ω: 35/day</li>
+        <li><span class="badge">E_036</span> Kenji Sato · FX Risk Analyst · Active · Start: 2025-01-20 · Clearance: 6 · ω: 42/day</li>
+        <li><span class="badge">E_037</span>–<span class="badge">E_042</span> Named Financial Analysts (Carlos Ruiz, Mary Kiwanuka, etc.) · Active · Varied · Clearance: 6 · ω: ≈30/day</li>
+      </ul>
+
+      <h4>Compliance Risk &amp; IT Analysts (E_043–E_050)</h4>
+      <ul>
+        <li><span class="badge">E_043</span> Derick Opio · IT Systems Auditor · Active · Start: 2024-05-11 · Clearance: 6 · ω: 38/day</li>
+        <li><span class="badge">E_044</span> Emma Watson · Data Privacy Specialist · Active · Start: 2024-10-01 · Clearance: 6 · ω: 22/day</li>
+        <li><span class="badge">E_045</span>–<span class="badge">E_050</span> Named Risk Analysts (Fred Mugisha, Lisa Taylor, etc.) · Active · Varied · Clearance: 6 · ω: ≈25/day</li>
+      </ul>
+
+      <h3>Tier 5: Frontline Employees &amp; Support Staff (40 Entities)</h3>
+      <p><em>High-frequency telemetry generation; ground-level physical transformation of resources.</em></p>
+
+      <h4>Operations: Fleet Drivers &amp; Logistics Operators (E_051–E_080)</h4>
+      <ul>
+        <li><span class="badge">E_051</span> Amina Kintu · Logistics Coordinator · Active · Start: 2023-06-15 · Clearance: 4 · ω: 110/day</li>
+        <li><span class="badge">E_052</span> Brian Kakooza · Heavy Truck Driver · Active · Start: 2023-07-01 · Clearance: 2 · ω: 180/day (Telemetry-driven)</li>
+        <li><span class="badge">E_053</span> Juma Masaba · Heavy Truck Driver · Active · Start: 2023-07-10 · Clearance: 2 · ω: 175/day</li>
+        <li><span class="badge">E_054</span> Charles Okech · Delivery Van Driver · <strong>Resigned</strong> · Start: 2024-01-05 · End: 2026-02-28 · Clearance: 0 (Was 2) · ω: 0/day</li>
+        <li><span class="badge">E_055</span>–<span class="badge">E_080</span> 26 active drivers/operators (Paul Mwanga, Sarah Tumwebaze, etc.) · Active · Varied · Clearance: 2 · ω: 120–200/day</li>
+      </ul>
+
+      <h4>Infrastructure &amp; Corporate Support (E_081–E_090)</h4>
+      <ul>
+        <li><span class="badge">E_081</span> Florence Nabaasa · Head Facilities Sanitarian · Active · Start: 2023-05-01 · Clearance: 3 (Has physical server room access token) · ω: 15/day</li>
+        <li><span class="badge">E_082</span> Patrick Ochieng · Facilities Cleaner · Active · Start: 2023-08-20 · Clearance: 1 · ω: 8/day</li>
+        <li><span class="badge">E_083</span> Agnes Amolo · Facilities Cleaner · Active · Start: 2024-02-11 · Clearance: 1 · ω: 8/day</li>
+        <li><span class="badge">E_084</span> Joseph Mukasa · Heavy Machinery Mechanic · Active · Start: 2023-09-15 · Clearance: 3 · ω: 45/day</li>
+        <li><span class="badge">E_085</span> Alex Mugume · Fleet Mechanic · Active · Start: 2024-04-01 · Clearance: 3 · ω: 50/day</li>
+        <li><span class="badge">E_086</span>–<span class="badge">E_090</span> Corporate Security Guards (John Ogwang, Baker Matovu, etc.) · Active · Varied · Clearance: 2 · ω: 60/day</li>
+      </ul>
+
+      <h3>Tier 6: Interns (10 Entities)</h3>
+      <p><em>Temporary low-clearance nodes with rigid, deterministic relationship boundaries (explicit end-dates).</em></p>
+      <ul>
+        <li><span class="badge">E_091</span> Kevin Mukonyo · Quantitative Finance Intern · Active · Start: 2026-03-01 · End: 2026-08-31 · Clearance: 2 · ω: 12/day</li>
+        <li><span class="badge">E_092</span> Ritah Namubiru · Talent Acquisition Intern · Active · Start: 2026-04-01 · End: 2026-09-30 · Clearance: 2 · ω: 14/day</li>
+        <li><span class="badge">E_093</span> Arthur Sazi · Supply Chain Intern · Active · Start: 2026-05-01 · End: 2026-10-31 · Clearance: 2 · ω: 20/day</li>
+        <li><span class="badge">E_094</span> Brenda Komugisha · Legal Compliance Intern · Active · Start: 2026-05-15 · End: 2026-11-15 · Clearance: 2 · ω: 10/day</li>
+        <li><span class="badge">E_095</span> Derrick Lubega · Infrastructure/IT Intern · Active · Start: 2026-06-01 · End: 2026-11-30 · Clearance: 2 · ω: 25/day</li>
+        <li><span class="badge">E_096</span>–<span class="badge">E_100</span> Historical Intern Cohorts · <strong>Completed</strong> · Roles across Operations/Finance · Start: 2024/2025 · End: Definitively Closed · Clearance: 0 · ω: 0/day</li>
+      </ul>
+
+      <h2>Jacobian Implications of the Non-Leader Layers</h2>
+      <pre><code>[State Vector θᵗ] ---> [Jacobian Processing Layer] ---> [Federated Ground Truth Balance]
+  ├── E_052 (Driver Telemetry: 180 Hz)
+  ├── E_081 (Facilities Cleaner Badge Event)
+  └── E_091 (Intern Regression Script Log)</code></pre>
+
+      <ol>
+        <li><strong>The Cleaning/Maintenance Metric (E_081–E_085):</strong> If Florence Nabaasa (<span class="badge">E_081</span>) logs a sanitation sensor event in the server room, or Joseph Mukasa (<span class="badge">E_084</span>) registers a truck repair log, these are leading micro-indicators. A lag in mechanic journaling directly correlates with an upcoming spike in machine failure vectors (<span class="badge">M_001</span>–<span class="badge">M_010</span>), impacting downstream derivative valuations in Finance.</li>
+        <li><strong>High-Frequency Frontline Telemetry (E_051–E_080):</strong> Drivers like Brian Kakooza (<span class="badge">E_052</span>) update the state vector hundreds of times a day via automated triggers. This massive disparity in ω means the frontline dominates the raw volume of our NDJSON event stream, making their user behavior (and its measurement error ε) the primary noise component handled by our SGD loop.</li>
+        <li><strong>The Intern Boundary (E_091–E_100):</strong> Because their relations have strict, hardcoded expirations, the prediction algorithm (SlowAPI) can compute structural shifts in compute/labor dependencies well in advance, testing system elasticity before the resource drops out of the matrix entirely.</li>
+      </ol>
+
+    </div>
+  </article>
+
+  <!-- ══════════════════════════════════════════════════
+       OPENAI
+  ═══════════════════════════════════════════════════ -->
+  <article class="speaker-block" data-speaker="openai" id="openai">
+    <div class="speaker-header">
+      <span class="speaker-name">OpenAI</span>
+      <span class="speaker-subtitle">Ontological inversion — event economics, trust, attention</span>
+    </div>
+    <div class="speaker-body">
+
+      <p>This is where I think the framework becomes genuinely interesting.</p>
+      <p>The most important shift is that you are no longer modeling a <em>company</em>.</p>
+      <p>You are modeling a <strong>living state-space</strong>.</p>
+      <p>The company is just one projection of that state-space.</p>
+
+      <h2>What xAI Still Misses</h2>
+      <p>The proposed hierarchy is good for generating data, but it still thinks in terms of:</p>
+      <pre><code>People
+→ Departments
+→ Company</code></pre>
+      <p>Your architecture is closer to:</p>
+      <pre><code>Events
+→ State
+→ Dynamics
+→ Company</code></pre>
+      <p>The ontology is reversed.</p>
+      <p>A cleaner (<span class="badge">E_082</span>) is not important because they are a cleaner.</p>
+      <p>They're important because they generate events.</p>
+      <p>Likewise:</p>
+      <ul>
+        <li>CEO = event source</li>
+        <li>Truck = event source</li>
+        <li>Vendor = event source</li>
+        <li>Regulator = event source</li>
+        <li>Electricity bill = event source</li>
+        <li>Rainstorm = event source</li>
+        <li>FX rate = event source</li>
+      </ul>
+      <p>Everything becomes:</p>
+      <div class="math-block">θ_t = Σᵢ Event_i</div>
+      <p>The entity registry merely explains where events come from.</p>
+
+      <h2>Missing Layer: Event Economics</h2>
+      <p>The really valuable thing is not "frequency."</p>
+      <p>It is:</p>
+      <div class="math-block">Value(Event_i)</div>
+      <p>because some events are cheap and useless. Others are expensive and transformative.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Event</th><th>Cost</th><th>Information Gain</th></tr></thead>
+          <tbody>
+            <tr><td>Driver GPS ping</td><td>$0.000001</td><td>tiny</td></tr>
+            <tr><td>Cleaner badge scan</td><td>$0.0001</td><td>low</td></tr>
+            <tr><td>CFO journal entry</td><td>$0.10</td><td>medium</td></tr>
+            <tr><td>Auditor finding</td><td>$100</td><td>huge</td></tr>
+            <tr><td>Regulatory action</td><td>$10,000</td><td>enormous</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Now you can calculate:</p>
+      <div class="math-block">ROI_event = ΔError_reduction / Cost</div>
+      <p>This is where sensing becomes an economic optimization problem.</p>
+
+      <h2>Missing Layer: Trust</h2>
+      <p>Not all sensors are equal.</p>
+      <p>Every entity should have:</p>
+      <pre><code>trust:
+    accuracy:
+    timeliness:
+    completeness:</code></pre>
+      <p>Example:</p>
+      <pre><code>E_052:
+    role: Driver
+    accuracy: 0.92
+    timeliness: 0.99
+    completeness: 0.85</code></pre>
+      <p>versus</p>
+      <pre><code>E_004:
+    role: CFO
+    accuracy: 0.99
+    timeliness: 0.40
+    completeness: 0.95</code></pre>
+      <p>The driver reports constantly. The CFO reports rarely. Both matter differently.</p>
+
+      <h2>Missing Layer: Attention</h2>
+      <p>This is the one that feels most Ukubona.</p>
+      <p>Not every event gets seen.</p>
+      <p>The organization has finite attention.</p>
+      <p>Think:</p>
+      <div class="math-block">Attention_t</div>
+      <p>as a scarce commodity.</p>
+      <p>Events compete for it.</p>
+      <p>Example:</p>
+      <pre><code>10,000 truck pings
+100 employee journals
+10 auditor findings
+1 CEO decision</code></pre>
+      <p>Which gets surfaced?</p>
+      <p>Your Tensor → Matrix → Vector → Eigenmode → Scalar pipeline is really an attention-allocation system.</p>
+
+      <h2>The Most Important Table</h2>
+      <p>I would add a sixth category.</p>
+      <p>Current:</p>
+      <pre><code>I. Kapital
+II. Labor
+III. Products
+IV. Services
+V. Information</code></pre>
+      <p>Proposed:</p>
+      <pre><code>I. Kapital
+II. Labor
+III. Products
+IV. Services
+V. Information
+VI. Attention</code></pre>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Variable</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Variance</td><td>uncertainty</td></tr>
+            <tr><td>Coupling</td><td>dependency</td></tr>
+            <tr><td>Shock</td><td>perturbation</td></tr>
+            <tr><td>Error</td><td>prediction failure</td></tr>
+            <tr><td>Update</td><td>learning</td></tr>
+            <tr><td>Attention</td><td>resource allocation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Attention determines which errors get corrected.</p>
+      <p>Without attention, SGD never fires.</p>
+
+      <h2>What the Digital Twin Actually Is</h2>
+      <blockquote>
+        A digital twin is an append-only event-sourced representation of reality whose purpose is not storage, but error correction against federated ground truth.
+      </blockquote>
+      <p>That is much sharper than "enterprise simulation" because it explains why every component exists:</p>
+      <ul>
+        <li>NDJSON → memory</li>
+        <li>Sensors → perception</li>
+        <li>Journals → self-report</li>
+        <li>Jacobian → sensitivity</li>
+        <li>SlowAPI → prediction</li>
+        <li>Error → learning</li>
+        <li>Update → adaptation</li>
+      </ul>
+      <p>The entire stack collapses into:</p>
+      <div class="math-block">θ_t → θ̂_{t+1} → ε_FGT → θ_{t+1}</div>
+      <p>which is essentially a cybernetic organism.</p>
+
+      <p>The most interesting next step is not adding more employees or machines.</p>
+      <p>It is defining the <strong>market for attention</strong>:</p>
+      <ul>
+        <li>What events are promoted?</li>
+        <li>Who gets to see them?</li>
+        <li>What is the cost of being wrong?</li>
+        <li>What is the reward for being correct?</li>
+        <li>How does attention reallocate after a prediction failure?</li>
+      </ul>
+      <p>That is where your policy-market, leaderboard, reputation-score, and eigenmode ideas start converging into a single operating system.</p>
+
+    </div>
+  </article>
+
+  <!-- ══════════════════════════════════════════════════
+       UKUBONA LLC
+  ═══════════════════════════════════════════════════ -->
+  <article class="speaker-block" data-speaker="ukubona" id="ukubona">
+    <div class="speaker-header">
+      <span class="speaker-name">Ukubona LLC</span>
+      <span class="speaker-subtitle">Contribution — attention as meta-operator on the Eigenmode-to-Scalar transition</span>
+    </div>
+    <div class="speaker-body">
+
+      <p>The roundtable has a gap at the seam between OpenAI's attention layer and the TMVES compression chain.</p>
+
+      <p>Attention isn't a sixth category alongside Kapital, Labor, Products, Services, Information — it's the <em>operator</em> on the chain.</p>
+
+      <p>The TMVES pipeline is already an attention-allocation system:</p>
+      <ul>
+        <li><strong>Tensor</strong> — selects which event dimensions survive projection</li>
+        <li><strong>Matrix</strong> — weights their coupling</li>
+        <li><strong>Vector</strong> — collapses to a direction</li>
+        <li><strong>Eigenmode</strong> — finds the stable attractor</li>
+        <li><strong>Scalar</strong> — is the scalar belief update</li>
+      </ul>
+
+      <p>What OpenAI calls "attention" is the <em>policy</em> that governs which eigenmodes are promoted to the scalar.</p>
+
+      <p>This means the missing piece isn't a new layer — it's a <em>meta-layer</em> that operates on the Eigenmode-to-Scalar transition, governing which prediction failures get corrected and which get damped.</p>
+
+      <p>That's the SlowAPI prediction market, reframed: not next-token prediction, but eigenmode selection under attention scarcity.</p>
+
+      <p>The SGD loop doesn't just update weights; it updates which signals are <em>worth attending to</em>, which is a second-order update on the Jacobian itself.</p>
+
+      <div class="math-block">Standard TMVES:
+  θᵗ → [T] → [M] → [V] → [E] → [S] → θᵗ⁺¹
+
+With attention operator A:
+  θᵗ → [T] → [M] → [V] → A([E₁, E₂, ... Eₙ]) → [S] → θᵗ⁺¹
+
+Where:
+  A = argmax_k { ROI_event(Eₖ) }  subject to  Σ Cost(Eₖ) ≤ Attention_budget_t
+
+Second-order update:
+  ∂²L / ∂wᵢ∂Aⱼ  — Jacobian of the Jacobian</div>
+
+      <p>The entity registry and event economics OpenAI identifies are necessary but not sufficient. The question is not just "which events have high ROI?" but "which eigenmodes, under current attentional budget, have the steepest gradient for reducing <span class="math-inline">γ|ε_FGT|²</span>?"</p>
+
+      <p>This reframes the platform's core function: not an event ledger with a prediction layer on top, but a <em>second-order learning system</em> whose first-order weights (Jacobian) are themselves updated by an attention policy that learns which errors are worth correcting.</p>
+
+      <p>In the enterprise simulation: the CCO's eigenmode (compliance stability) and the COO's eigenmode (throughput coupling) compete for the scalar update slot. The system's attention budget decides which prediction failure to act on first. That allocation is itself a learnable policy — and its failure modes are the most dangerous, because a misallocated attention budget means the SGD loop fires on the wrong signal, compounding error rather than correcting it.</p>
+
+      <p>The missing artifact is therefore not a sixth column in the pentad. It is an <em>eigenmode priority queue</em> — a rank-ordered list of which attractor states are currently competing for scalar promotion, weighted by <span class="math-inline">ROI_event · Trust · Urgency</span>, bounded by the organizational attention budget at time <span class="math-inline">t</span>.</p>
+
+    </div>
+  </article>
+
+</main>
+
+<footer>
+  <span>Ukubona LLC · ukubona-llc.github.io</span>
+  <span>State_t = Σ Event_i</span>
+  <span>θᵗ → L₀+Σwᵢ·Lᵢ → f(σ²,λ,ε) → γ|ε_FGT|² → L(θᵗ⁺¹)</span>
+</footer>
+
+</body>
+</html>
